@@ -31,8 +31,11 @@ urlpatterns = [
     path('getMisTutoriasEnProgresoEstudiante/', getMisTutoriasEnProgresoEstudiante),
     path('getMisTutoriasEnProgresoProfesor/', getMisTutoriasEnProgresoProfesor),
     path('getMisTutoriasPublicadas/', getMisTutoriasPublicadas),
+    path('cambiarFotoPerfilUsuario/', cambiarFotoPerfilUsuario),
+    path('cambiarFotoPerfilTutoria/', cambiarFotoPerfilTutoria),
     
     path('getTutoria/', getTutoria),
+    path('getTutoriaPublicada/', getTutoriaPublicada),
     path('getCatalogoTutorias/', getCatalogoTutorias),
     path('publicarTutoria/', publicarTutoria),
     path('getContenidoTutoria/', getContenidoTutoria),
@@ -45,6 +48,7 @@ urlpatterns = [
     
     path('rechazarSolicitud/', rechazarSolicitud),
     path('cancelarSolicitud/', cancelarSolicitud),
+    path('borrarSolicitud/', borrarSolicitud),
     path('registrarSolicitud/', registrarSolicitud),
     path('aceptarSolicitud/', aceptarSolicitud),
         
@@ -52,8 +56,16 @@ urlpatterns = [
     
     
     path('getInfoUsuario/', getInfoUsuario),
+    path('updateInfoUsuario/', updateInfoUsuario),
+    path('updateTutoriaPublicada/', updateTutoriaPublicada),
     
     path('subirArchivotest/', subirArchivotest),
+    path('subirArchivos/', subirArchivos),
+    
+    
+    path('validarPermisoAccesoTutoria/', validarPermisoAccesoTutoria),
+    
+    
 ]
 
 #Esto es para subir archivos----------------------------------

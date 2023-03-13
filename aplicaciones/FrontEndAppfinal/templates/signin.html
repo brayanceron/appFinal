@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h2>Registrar Usuario</h2>
+
+    <!-- 
+    <form method="post">{% csrf_token %}
+        {{form.as_p}}
+
+        <input type="submit" value="Registrar">
+    </form>
+    -->
+    <hr>
+    <form method="post"> {% csrf_token %}
+
+        <input type="text" id="" name="username" placeholder="username">
+        <input type="text" id="" name="email" placeholder="email">
+        <input type="password" id="" name="password1" placeholder="contraseña">
+        <input type="password" id="" name="password2" placeholder="confirma contraseña">
+        <input type="submit" value="REgistrar">
+    </form>
+</body>
+</html>

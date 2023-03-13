@@ -1,0 +1,91 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+
+{% block fotoPerfilNav%}{{info_usuario.0.foto.url}}{%endblock%}
+{% block MiPerfil%}{{user.email}}{%endblock%}
+{% block nombreNav%}{{user.username}}{%endblock%}
+{% block rolNav%}
+    {%if info_usuario.0.rol == 'E' %}
+        Estudiante
+    {%elif info_usuario.0.rol == 'P' %}
+        Profesor
+    {%elif info_usuario.0.rol == 'A' %}
+        Todo
+    {%endif%}
+
+{%endblock%}
+
+
+{% block contenido %}
+<div class="page-header">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="page-sub-header">
+                <h3 class="page-title">Panel Tutoria</h3>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                    <li class="breadcrumb-item active">Mis Tutorias</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- <a href="/web/registrarEntrada/{{info_tutoria.0.id_tutoria}}/{{info_tutoria.0.id_profesor}}"class="btn btn-danger">Crear Entrada</a> -->
+<a href="/web/registrarEntrada/{{info_tutoria.0.id_tutoria}}" class="btn btn-danger">Crear Entrada</a>
+
+    {{info_usuario.0.id_usuario_actual}}
+
+    {% for t in contenido_tutoria %}
+    <div class="row">
+        <div class="col-1 col-md-1"></div>
+        <div class="col-md-10 col-10">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">{{t.titulo}}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <p style="font-size: 13px;  ">Por: {{t.id_profesor.0.nombre}} {{t.fecha_creacion}}</p>
+                        <p>{{t.descripcion}}</p>
+                        {%for a in t.archivos%}
+                            {% if a.extension == "jpg" or a.extension == "png" or a.extension == "jpeg" or a.extension == "gif" or a.extension == "jfif" or a.extension == "svg" or a.extension == "bmp" or a.extension == "tip" %}
+                            <div class="col-auto">
+                                <img src="/api{{a.url}}" class="imgpub" alt="work-thumbnail">
+                                
+                            </div>
+                            
+                            {% elif a.extension == "mp4" or a.extension == "wmv" or a.extension == "avi" or a.extension == "avchd"  or a.extension == "flv" or a.extension == "mkv" or a.extension == "webm" or a.extension == "f4v" or a.extension == "swf" or a.extension == "html5" %}
+                            <div class="col-auto">
+                                <video src="/api{{a.url}}" class="imgpub" controls></video>
+                            </div>
+                            {%endif%}
+                        {%endfor%}
+
+                        <br>
+                        <div class="d-flex flex-wrap gap-2">
+                            <a href="/web/getEntrada/{{t.idn}}"class="badge bg-warning">Entrar</a>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    {%endfor%}
+    {{contenido_tutoria}}
+
+
+
+<style>
+    .imgpub {
+        max-width: 225px;
+        height: 225px;
+        object-fit: scale-down;
+    }
+</style>
+
+
+{%endblock%}

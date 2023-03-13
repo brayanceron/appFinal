@@ -5,6 +5,8 @@ from django.views.generic import View
 from django.core.files.storage import FileSystemStorage
 from .consultasMogoDB import *
 import json
+from datetime import datetime
+import uuid
 
 
 
@@ -36,9 +38,78 @@ def getInfoUsuario(request):
         listaR=json.loads(getInfoUsuarioMongo(correo))
         #print(listaR)
         return JsonResponse((listaR),safe=False)
+    
+@csrf_exempt 
+def updateInfoUsuario(request):
+    if request.method == 'POST':
+        
+        print("Actualizando informacion de un usuario")
+        datarecivida =json.loads(request.body.decode("utf-8")) 
+        correo=datarecivida['correo']
+        telefono=datarecivida['telefono']
+        direccion=datarecivida['direccion']
+        nombre=datarecivida['nombre']
+        descripcion=datarecivida['descripcion']
+        
+        data={
+            'correo':correo,
+            'telefono':telefono,
+            'direccion':direccion,
+            'nombre':nombre,
+            "descripcion":descripcion
+        }
+     
+        #listaR=json.loads(updateInfoUsuarioMongo(data))
+        #return JsonResponse((listaR),safe=False)
+    
+        state=updateInfoUsuarioMongo(data)
+        return JsonResponse({},safe=False)
 
 
+@csrf_exempt 
+def updateTutoriaPublicada(request):
+    if request.method == 'POST':
+        
+        print("Actualizando informacion de la tutoria")
+        datarecivida =json.loads(request.body.decode("utf-8")) 
+        correo=datarecivida['correo']
+        nombre=datarecivida['nombre']
+        descripcion=datarecivida['descripcion']
+        id_tutoria=datarecivida['id_tutoria']
+        
+        data={
+            'correo':correo,
+            'nombre':nombre,
+            "descripcion":descripcion,
+            "id_tutoria":id_tutoria
+        }
+     
+        #listaR=json.loads(updateInfoUsuarioMongo(data))
+        #return JsonResponse((listaR),safe=False)
+    
+        state=updateTutoriaPublicadaMongo(data)
+        return JsonResponse({},safe=False)
 
+@csrf_exempt 
+def cambiarFotoPerfilUsuario(request):
+    correo = request.POST["correo"] 
+    infoFoto=subirFotoTutoria(request)  
+    
+
+    
+    state=cambiarFotoPerfilUsuarioMongo(correo,infoFoto)
+    return JsonResponse({},safe=False)
+
+
+@csrf_exempt 
+def cambiarFotoPerfilTutoria(request):
+    id_tutoria = request.POST["id_tutoria"] 
+    infoFoto=subirFotoTutoria(request)  
+    
+
+    
+    state=cambiarFotoPerfilTutoriaMongo(id_tutoria,infoFoto)
+    return JsonResponse({},safe=False)
 
 @csrf_exempt 
 def getMisTutoriasEnProgresoEstudiante(request):
@@ -87,7 +158,18 @@ def getTutoria(request):
         #print("***** BACK *****"+str(id_tutoria))
         listaR=json.loads(getTutoriaMongo(id_tutoria))
         return JsonResponse((listaR),safe=False)
-    
+
+@csrf_exempt 
+def getTutoriaPublicada(request):
+    if request.method == 'POST':
+        print("Buscando tutoria")
+        datarecivida =json.loads(request.body.decode("utf-8")) 
+        
+        id_tutoria=datarecivida['id_tutoria']
+        #print("***** BACK *****"+str(id_tutoria))
+        listaR=json.loads(getTutoriaPublicadaMongo(id_tutoria))
+        return JsonResponse((listaR),safe=False)
+
 @csrf_exempt 
 def getCatalogoTutorias(request):
     if request.method == 'GET':
@@ -103,36 +185,64 @@ def getContenidoTutoria(request):
         datarecivida =json.loads(request.body.decode("utf-8")) 
         
         id_tutoria=datarecivida['id_tutoria']
-        listaR=json.loads(getContenidoTutoriaMongo(id_tutoria))
-        print(listaR)
-        return JsonResponse((listaR),safe=False)
+        current_user_id=datarecivida['current_user_id']
+        
+        
+        #print("****BACK*****"+current_user_id)
+        listaR=json.loads(getContenidoTutoriaMongo(id_tutoria,current_user_id))
+        if (str(listaR)=="500"):
+            #print("---bk--- 500")
+            return JsonResponse({},safe=False,status="500")
+        elif (str(listaR)=="403"):
+            #print("---bk--- 403")
+            return JsonResponse({},safe=False,status="403")
+        else:
+            #print("---bk--- 200")
+            return JsonResponse((listaR),safe=False,status="200")
         
         #return JsonResponse({"ok":"ok"},safe=False)
 
+
+
+    
 @csrf_exempt 
-def publicarTutoria(request):
+def publicarTutoria(request): #Esto es para los moviles, no esta terminada
     if request.method == 'POST':
         print("registrando tutoria")
-        datarecivida =json.loads(request.body.decode("utf-8")) 
+        nombre = request.POST["nombre"]
         
-        nombre=datarecivida['nombre']
-        id_profesor=datarecivida['id_profesor']
-        descripcion=datarecivida['descripcion']
+        id_profesor = request.POST["id_profesor"] 
+        descripcion = request.POST["descripcion"] 
         
+        print(" *** BACK ***"+nombre+"-"+id_profesor+"-"+descripcion)
+        #=======================================0
         
-        dd=[nombre,id_profesor,descripcion]
+        infoFoto=subirFotoTutoria(request)              
         
-        print("----------------------------------")
-        #print(jsondata)
-        #print(type(jsondata))
-        #print("----------------------------------")
+        dd=[nombre,id_profesor,descripcion,infoFoto]   
+
         publicarTutoriaMongo(dd)
-        
+        #==============================================
         #listaR=json.loads(getTutoriaMongo(id_tutoria))
         return JsonResponse({"ok":"ok"},safe=False)
 
-
-
+def subirFotoTutoria(request):
+    if request.method == 'POST':
+        now = datetime.now()
+        #uuid=str(now.microsecond)+str(now.second)+str(now.minute)+str(now.hour)+str(now.day)+str(now.month)+str(now.year)
+        myuuid = str(uuid.uuid4())
+        
+        myfile=request.FILES['Myarchivo']
+        fs= FileSystemStorage()
+        nombre_archivo=myuuid+str((myfile.name).strip())
+        #extension_archivo=str(myfile.name).split(sep='.')[1]
+        extension_archivo=str(myfile.name).split(sep='.').pop()
+        
+        filename=fs.save(nombre_archivo,myfile)
+        uploaded_file_url=fs.url(filename)
+       
+        return {"url":uploaded_file_url,"nombre":nombre_archivo,"extension":extension_archivo}
+        #return uploaded_file_url
 
 @csrf_exempt 
 def getEntrada(request):
@@ -145,16 +255,62 @@ def getEntrada(request):
         listaR=json.loads(getEntradaMongo(id_entrada))
         print(listaR)
         return JsonResponse((listaR),safe=False)
-    
+
 @csrf_exempt 
 def registrarEntrada(request):
     if request.method == 'POST':
+        print("registrando tutoria")
+        titulo = request.POST["titulo"]
+        descripcion = request.POST["descripcion"] 
+        id_tutoria = request.POST["id_tutoria"] 
+        id_profesor = request.POST["id_profesor"] 
+        
+        current_user_id=request.POST['current_user_id']
+        
+        print(" *** BACK ***"+titulo+"-"+id_profesor+"-"+descripcion+"->"+current_user_id)
+        #=======================================0
+        
+        urlsArchivos=subirArchivosEntrada(request)          
+        data=[id_tutoria,id_profesor,titulo,descripcion,urlsArchivos,current_user_id]
+        st=registrarEntradaMongo(data)
+
+        #==============================================
+        #listaR=json.loads(getTutoriaMongo(id_tutoria))
+        return JsonResponse({"ok":"ok"},safe=False,status=st)
+
+def subirArchivosEntrada(request):
+    if request.method == 'POST':
+
+        lita_urls=[]
+        a=0
+        for file in request.FILES:
+            myuuid = str(uuid.uuid4())
+            myfile=request.FILES['Myarchivo'+str(a)]
+            fs= FileSystemStorage()
+            nombre_archivo=myuuid+str((myfile.name).strip())
+            #extension_archivo=str(myfile.name).split(sep='.')[1]
+            extension_archivo=str(myfile.name).split(sep='.').pop()
+            
+            filename=fs.save(nombre_archivo,myfile)
+            uploaded_file_url=fs.url(filename)
+            
+            a=a+1
+
+            lita_urls.append({"url":uploaded_file_url,"nombre":nombre_archivo,"extension":extension_archivo})
+        
+            #return {"url":uploaded_file_url,"extension":str(myfile.name).split(sep='.')[1]}
+        return lita_urls
+
+@csrf_exempt 
+def registrarEntrada2(request):
+    if request.method == 'POST':
         print("registrando entrada")
+        ##print(" BACK**** "+str(request.body))
         datarecivida =json.loads(request.body.decode("utf-8")) 
         
         titulo=datarecivida['titulo']
         id_tutoria=datarecivida['id_tutoria']        
-        id_profesor=datarecivida['id_profesor']
+        id_profesor=datarecivida['id_profesor'] #ide del usuario que publica la entrada
         descripcion=datarecivida['descripcion']
         
         data=[id_tutoria,id_profesor,titulo,descripcion]
@@ -197,10 +353,25 @@ def subirArchivotest(request):
         print("========================================")
         print(filename)
         print("========================================")
-        print("name: "+filename+",size: "+str(myfile.size)+",extension: "+str(myfile.name).split(sep='.')[1])
+        #print("name: "+filename+",size: "+str(myfile.size)+",extension: "+str(myfile.name).split(sep='.')[1])
         print("************")
         return JsonResponse({"ok":"ok"},safe=False)
-    
+
+@csrf_exempt 
+def subirArchivos(request):
+    if request.method == 'POST':
+        data = request.FILES
+        uploadedFiles = data.getlist('myfiles')
+        for single_file in uploadedFiles :
+            print(single_file)
+            fs= FileSystemStorage()
+            filename=fs.save(single_file.name,single_file)
+            uploaded_file_url=fs.url(filename)
+            print(uploaded_file_url)
+            
+        return HttpResponse("SIIII")
+        
+    return HttpResponse("No se subio nada")
     
 @csrf_exempt 
 def getSolicitudesProfesor(request):
@@ -227,6 +398,10 @@ def getSolicitudesEstudiante(request):
         listaR=json.loads(getSolicitudesEstudianteMongo(id_usuario)) #se convierte a json la cadena que viene en formato json
         return JsonResponse((listaR),safe=False)
 
+
+
+
+
 @csrf_exempt 
 def rechazarSolicitud(request):
     if request.method == 'POST':
@@ -241,7 +416,6 @@ def rechazarSolicitud(request):
         
         return JsonResponse({},safe=False,status=status)
     
-
 @csrf_exempt 
 def cancelarSolicitud(request):
     if request.method == 'POST':
@@ -269,7 +443,7 @@ def registrarSolicitud(request):
         
         #print("estado: "+status)
         
-        return JsonResponse({},safe=False,status=status)
+        return JsonResponse({"ok":"ok"},safe=False,status=status)
     
 @csrf_exempt     
 def aceptarSolicitud(request):
@@ -278,12 +452,26 @@ def aceptarSolicitud(request):
     
         id_solicitud=datarecivida['id_solicitud']
         id_usuario=datarecivida['id_usuario'] #es el id del usuario(debe ser necesariamente un profesor) que inicio sesion en el front y es el que manda la peticion, se debe validar que sea el dueño de la tutoria
+                
+        listaR=json.loads(aceptarSolicitudMongo(id_solicitud,id_usuario))  
+        print("*** BACK **** estado: "+str(listaR[0]))
+              
+        return JsonResponse(listaR,safe=False,status=listaR[0]['status'])
+
+@csrf_exempt 
+def borrarSolicitud(request):
+    if request.method == 'POST':
+        datarecivida =json.loads(request.body.decode("utf-8")) 
+    
+        id_solicitud=datarecivida['id_solicitud']
+        id_usuario=datarecivida['id_usuario'] #es el id del usuario que inicio sesion en el front y es el que manda la peticion, se debe validar que sea el dueño de la solicitud
         
-        status= aceptarSolicitudMongo(id_solicitud,id_usuario)
+        status= borrarSolicitudMongo(id_solicitud,id_usuario)
         
         print("estado: "+status)
         
         return JsonResponse({},safe=False,status=status)
+    
     
     
 @csrf_exempt    
@@ -300,4 +488,15 @@ def unirmeTutoria(request):
         
         return JsonResponse({},safe=False,status=status)
     
+
+@csrf_exempt    
+def validarPermisoAccesoTutoria(request):
+    if request.method == 'POST':
+        datarecivida =json.loads(request.body.decode("utf-8")) 
     
+        id_tutoria=datarecivida['id_tutoria']
+        current_user_id=datarecivida['current_user_id'] #es el id del usuario(debe ser necesariamente un profesor) que inicio sesion en el front y es el que manda la peticion, se debe validar que sea el dueño de la tutoria
+        if (validarPermisoAccesoTutoriaMongo(id_tutoria,current_user_id)==False): 
+            return JsonResponse({"result":False},safe=False,status="403")
+        else:
+            return JsonResponse({"result":True},safe=False,status="200")
