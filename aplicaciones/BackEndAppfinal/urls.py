@@ -33,6 +33,8 @@ urlpatterns = [
     path('getMisTutoriasPublicadas/', getMisTutoriasPublicadas),
     path('cambiarFotoPerfilUsuario/', cambiarFotoPerfilUsuario),
     path('cambiarFotoPerfilTutoria/', cambiarFotoPerfilTutoria),
+    path('registrarUsuario/', registrarUsuario),
+    
     
     path('getTutoria/', getTutoria),
     path('getTutoriaPublicada/', getTutoriaPublicada),
@@ -64,6 +66,7 @@ urlpatterns = [
     
     
     path('validarPermisoAccesoTutoria/', validarPermisoAccesoTutoria),
+    path('validarPermisoAccesoEntrada/', validarPermisoAccesoEntrada),
     
     
 ]

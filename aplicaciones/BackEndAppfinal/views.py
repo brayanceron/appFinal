@@ -9,8 +9,6 @@ from datetime import datetime
 import uuid
 
 
-
-
 def root(request):
     return HttpResponse("Oki")
 
@@ -39,6 +37,23 @@ def getInfoUsuario(request):
         #print(listaR)
         return JsonResponse((listaR),safe=False)
     
+@csrf_exempt 
+def registrarUsuario(request):
+    if request.method == 'POST':
+        datarecivida =json.loads(request.body.decode("utf-8")) 
+        correo=datarecivida['correo']
+        rol=datarecivida['rol']
+        nombre=datarecivida['nombre']
+        
+        
+        if (validarCorreoExisteMongo(correo)==True): 
+            return JsonResponse({},safe=False,status="428")
+        
+        st=str(crearUsuarioMongo(correo,rol,nombre))
+        print("*** BACK ESTADO ***"+st)
+        return JsonResponse({},safe=False,status=st)
+
+
 @csrf_exempt 
 def updateInfoUsuario(request):
     if request.method == 'POST':
@@ -251,10 +266,20 @@ def getEntrada(request):
         datarecivida =json.loads(request.body.decode("utf-8")) 
         
         id_entrada=datarecivida['id_entrada']
+        current_user_id=datarecivida['current_user_id']
         print(id_entrada)
-        listaR=json.loads(getEntradaMongo(id_entrada))
+        listaR=json.loads(getEntradaMongo(id_entrada,current_user_id))
         print(listaR)
-        return JsonResponse((listaR),safe=False)
+        if (str(listaR)=="500"):
+            #print("---bk--- 500")
+            return JsonResponse({},safe=False,status="500")
+        elif (str(listaR)=="403"):
+            #print("---bk--- 403")
+            return JsonResponse({},safe=False,status="403")
+        else:
+            #print("---bk--- 200")
+            return JsonResponse((listaR),safe=False,status="200")
+            #return JsonResponse((listaR),safe=False)
 
 @csrf_exempt 
 def registrarEntrada(request):
@@ -454,6 +479,7 @@ def aceptarSolicitud(request):
         id_usuario=datarecivida['id_usuario'] #es el id del usuario(debe ser necesariamente un profesor) que inicio sesion en el front y es el que manda la peticion, se debe validar que sea el dueño de la tutoria
                 
         listaR=json.loads(aceptarSolicitudMongo(id_solicitud,id_usuario))  
+        print("*** BACK **** estado: "+str(listaR))
         print("*** BACK **** estado: "+str(listaR[0]))
               
         return JsonResponse(listaR,safe=False,status=listaR[0]['status'])
@@ -487,7 +513,9 @@ def unirmeTutoria(request):
         print("estado: "+status)
         
         return JsonResponse({},safe=False,status=status)
-    
+
+
+#Validaciones    
 
 @csrf_exempt    
 def validarPermisoAccesoTutoria(request):
@@ -497,6 +525,18 @@ def validarPermisoAccesoTutoria(request):
         id_tutoria=datarecivida['id_tutoria']
         current_user_id=datarecivida['current_user_id'] #es el id del usuario(debe ser necesariamente un profesor) que inicio sesion en el front y es el que manda la peticion, se debe validar que sea el dueño de la tutoria
         if (validarPermisoAccesoTutoriaMongo(id_tutoria,current_user_id)==False): 
+            return JsonResponse({"result":False},safe=False,status="403")
+        else:
+            return JsonResponse({"result":True},safe=False,status="200")
+        
+@csrf_exempt   
+def validarPermisoAccesoEntrada(request):
+    if request.method == 'POST':
+        datarecivida =json.loads(request.body.decode("utf-8")) 
+    
+        id_entrada=datarecivida['id_entrada']
+        current_user_id=datarecivida['current_user_id'] #es el id del usuario(debe ser necesariamente un profesor) que inicio sesion en el front y es el que manda la peticion, se debe validar que sea el dueño de la tutoria
+        if (validarPermisoAccesoEntradaMongo(id_entrada,current_user_id)==False): 
             return JsonResponse({"result":False},safe=False,status="403")
         else:
             return JsonResponse({"result":True},safe=False,status="200")

@@ -1,29 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
+
 <body>
     <h2>Registrar Usuario</h2>
 
-    <!-- 
+    
     <form method="post">{% csrf_token %}
         {{form.as_p}}
 
         <input type="submit" value="Registrar">
     </form>
-    -->
+
     <hr>
+    {{error}}
     <form method="post"> {% csrf_token %}
 
-        <input type="text" id="" name="username" placeholder="username">
-        <input type="text" id="" name="email" placeholder="email">
-        <input type="password" id="" name="password1" placeholder="contraseña">
-        <input type="password" id="" name="password2" placeholder="confirma contraseña">
+        <input type="text" id="" name="username"    required placeholder="Username">
+        <input type="text" id="" name="first_name"  required placeholder="Nombre">
+        <input type="text" id="" name="last_name"   required placeholder="Apellido">
+        <input type="text" id="" name="email"       required placeholder="Correo">
+        <input type="password" id="" name="password1" required placeholder="contraseña">
+        <input type="password" id="" name="password2" required placeholder="confirma contraseña">
+
+
+
+
+        <div class="form-group row">
+            <label class="col-lg-3 col-form-label">Rol</label>
+            <div class="col-lg-9">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="rol" id="rol_profesor" value="P"
+                        checked="">
+                    <label class="form-check-label" for="rol_profesor">
+                        Profesor
+                    </label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="rol" id="rol_estudiante" value="E">
+                    <label class="form-check-label" for="rol_estudiante">
+                        Estudiante
+                    </label>
+                </div>
+            </div>
+        </div>
+
+
+
         <input type="submit" value="REgistrar">
     </form>
 </body>
+
 </html>

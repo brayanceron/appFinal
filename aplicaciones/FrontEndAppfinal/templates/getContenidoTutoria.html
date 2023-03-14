@@ -35,8 +35,11 @@
 <!-- <a href="/web/registrarEntrada/{{info_tutoria.0.id_tutoria}}/{{info_tutoria.0.id_profesor}}"class="btn btn-danger">Crear Entrada</a> -->
 <a href="/web/registrarEntrada/{{info_tutoria.0.id_tutoria}}" class="btn btn-danger">Crear Entrada</a>
 
-    {{info_usuario.0.id_usuario_actual}}
-
+    <!--{{info_usuario.0.id_usuario_actual}}-->
+    <p>Tutoria: {{info_tutoria.0.nombre}}</p>
+    <p>Id: {{info_tutoria.0.id_tutoria}}</p>
+    <p>Estudiantes: {{info_tutoria.0.id_estudiantes|length}}</p>
+    <p>Profesor: {{info_tutoria.0.nombre_profesor}}</p>
     {% for t in contenido_tutoria %}
     <div class="row">
         <div class="col-1 col-md-1"></div>
@@ -75,6 +78,9 @@
         </div>
     </div>
     {%endfor%}
+
+    {{info_tutoria}}
+    <hr>
     {{contenido_tutoria}}
 
 

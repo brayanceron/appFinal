@@ -26,6 +26,36 @@ def getInfoUsuarioMongo(correo):
     print(json_string_data)
     return json_string_data
 
+def crearUsuarioMongo(correo,rol,nombre):
+    print("***BACK Creando Usuario****")
+    save={
+        "nombre":nombre,
+        "correo":correo,
+        "rol":rol,
+        "foto": {
+            "url": "/media/user.png",
+            "nombre": "user.png",
+            "extension": "png"
+        }
+    }
+    try:
+        db.usuarios.insert_one(save)
+        return "200"
+    except:
+        return "500"
+    
+    
+def validarCorreoExisteMongo(correo):
+    resultado=db.usuarios.find_one({"correo":correo})
+    print("***BACK validando si el correo ya esta registrado****")
+    print(resultado)
+    if(resultado is not None):
+        print("*** BACK busqueda de usuario No nula")
+        return True     
+    print("***BACK**** if false")
+    return False
+
+
 
 def updateInfoUsuarioMongo(data):
    
@@ -109,6 +139,7 @@ def getSolicitudesProfesorMongo(id_usuario):
     pipeline = [
     {"$match":{"id_profesor":ObjectId(id_usuario)}},
     {"$match":{"estado":"ESPERA"}},
+    {"$match":{"dejar_de_ver":False}},
     {"$lookup":{"from":"tutoriasPublicadas","localField":"id_tutoria_publicada","foreignField":"_id","as":"id_tutoria_publicada"}},
     {"$lookup":{"from":"usuarios","localField":"id_solicitante","foreignField":"_id","as":"id_solicitante"}},
     {"$lookup":{"from":"usuarios","localField":"id_profesor","foreignField":"_id","as":"id_profesor"}}
@@ -247,21 +278,52 @@ def validarPermisoAccesoTutoriaMongo(id_tutoria,current_user_id):
     
     return False
     
-def getEntradaMongo(id_tutoria):
+def getEntradaMongo(id_entrada,current_user_id):
     pipeline = [
-    {"$match": {"_id": ObjectId(id_tutoria)}},
+    {"$match": {"_id": ObjectId(id_entrada)}},
     #{"$lookup": {"from":"profesores","localField":"id_profesor","foreignField":"_id","as":"id_profesor"}},
     {"$lookup": {"from":"usuarios","localField":"id_profesor","foreignField":"_id","as":"id_profesor"}},
     
     ]
     
-    results=db.entradasTutorias.aggregate(pipeline)
-    list_cur = list(results)
+    try:
+        if (validarPermisoAccesoEntradaMongo(id_entrada,current_user_id)==False): 
+            print("---BK--- No encontrado 403")
+            return "403"
+    except:
+        return "500"
     
-    json_string_data = dumps(list_cur)#convirtiendo a json el diccionario anterior
-    return json_string_data #se devuelve una cadena en formato json
+    try:
+        results=db.entradasTutorias.aggregate(pipeline)
+        list_cur = list(results)
+        
+        json_string_data = dumps(list_cur)#convirtiendo a json el diccionario anterior
+        return json_string_data #se devuelve una cadena en formato json
+    except:
+        return "500"
 
+def validarPermisoAccesoEntradaMongo(id_entrada,current_user_id):
+    pipelineProfesor = [    
+    {"$match": {"_id": ObjectId(id_entrada)}},
+    {"$lookup": {"from":"tutorias","localField":"id_tutoria","foreignField":"_id","as":"id_tutoria"}},
+    #{"$match": {"id_tutoria.id_profesor": ObjectId(current_user_id)}},
+    ]
 
+    
+    resultadoProfesor=db.entradasTutorias.aggregate(pipelineProfesor)
+    list_curp = list(resultadoProfesor)
+    
+    #print(list_curp[0]["id_tutoria"][0]["id_profesor"])
+    #print(list_curp[0]["id_tutoria"][0]["id_estudiantes"])
+    if(str(list_curp[0]["id_tutoria"][0]["id_profesor"])==str(current_user_id)): return True 
+    
+    for e in list_curp[0]["id_tutoria"][0]["id_estudiantes"]:
+        #print (e)
+        if (str(e)==str(current_user_id)): return True 
+    
+    
+    
+    return False
 
 def registrarEntradaMongo(data): #data es un vector de 4 pociciones que contiene [id_tutoria,id_profesor,titulo,descripcion]
     print(data)
@@ -326,7 +388,9 @@ def rechazarSolicitudMongo(id_solicitud,id_usuario):
     print("Propietario recivido: "+id_usuario)
     
     if(str(res["id_profesor"])==str(id_usuario)): #se valida que es el dueño de la tutoria
+              
         try:
+            if (validarEstadoSolicitudMongo(id_solicitud,id_usuario)==False): return "428"
             db.solicitudes.update_one(
                 {"_id": ObjectId(id_solicitud)},
                 {"$set":{"estado":"RECHAZADA"}}
@@ -348,6 +412,7 @@ def cancelarSolicitudMongo(id_solicitud,id_usuario):
     
     if(str(res["id_solicitante"])==str(id_usuario)): 
         try:
+            if (validarEstadoSolicitudMongo(id_solicitud,id_usuario)==False): return "428"
             db.solicitudes.update_one(
                 {"_id": ObjectId(id_solicitud)},
                 {"$set":{"estado":"CANCELADA"}}
@@ -391,6 +456,10 @@ def aceptarSolicitudMongo(id_solicitud,id_usuario):
     
     if(str(res["id_profesor"])==str(id_usuario)): #se valida que es el dueño de la tutoria
         try:
+            if (validarEstadoSolicitudMongo(id_solicitud,id_usuario)==False): 
+                rdr=[{"status":"428","id_insesrcion":""}]
+                return dumps(rdr);
+            
             db.solicitudes.update_one(
                 {"_id": ObjectId(id_solicitud)},
                 {"$set":{"estado":"ACEPTADA"}}
@@ -402,11 +471,13 @@ def aceptarSolicitudMongo(id_solicitud,id_usuario):
             return dumps(st);
         except Exception as err:
             print("*** Back Error1 *** "+str(err))
-            rdr={"status":"500","id_insesrcion":""}
+            #rdr={"status":"500","id_insesrcion":""}
+            rdr=[{"status":"500","id_insesrcion":""}]
             return dumps(rdr);
         
     else:
-        rdr={"status":"403","id_insesrcion":""}
+        #rdr={"status":"403","id_insesrcion":""}
+        rdr=[{"status":"403","id_insesrcion":""}]
         return dumps(rdr);
 
 
@@ -448,7 +519,7 @@ def crearInstanciaTutoriaPublicada(id_solicitud,id_usuario):
                 #data=[id_tutoria,id_profesor,titulo,descripcion]
                 titulo="Bienvenida!"
                 descripcion='Has iniciado un nuevo camino de aprendizaje,  te damos la bienvenida a la tutoria de "'+list_cur[0]["id_tutoria_publicada"][0]["nombre"]+'"'
-                data=[id_insesrcion,list_cur[0]["id_profesor"][0]["_id"],titulo,descripcion,archivos]
+                data=[id_insesrcion,list_cur[0]["id_profesor"][0]["_id"],titulo,descripcion,archivos,id_usuario]
                 try:
                     registrarEntradaMongo(data)
                     rdr=[{"status":"200","id_insercion":id_insesrcion}]
@@ -518,6 +589,21 @@ def borrarSolicitudMongo(id_solicitud,id_usuario):
 
 
 
+
+def validarEstadoSolicitudMongo(id_solicitud,current_user_id):
+    
+    resultadoProfesor=db.solicitudes.find_one({"_id":ObjectId(id_solicitud),"id_profesor":ObjectId(current_user_id),"estado":"ESPERA"})
+    if(resultadoProfesor is not None): return True 
+    
+    resultadoEstu=db.solicitudes.find_one({"_id":ObjectId(id_solicitud),"id_solicitante":ObjectId(current_user_id),"estado":"ESPERA"})
+    if(resultadoEstu is not None): return True 
+    
+    
+    return False
+
+
+    
+    
 
 #
 #print (json_data)

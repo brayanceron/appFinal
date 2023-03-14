@@ -34,9 +34,12 @@
 <!-- OJO AQUI, PRIMERA BALIDACION DE ROL -->
 
 {% if info_usuario.0.rol != 'E'%}
-<a href="/web/publicarTutoria/{{info_usuario.0.id_usuario_actual}}" class="btn btn-danger">Crear Tutoria</a> <!-- Esta opcion no deberia aparecer si el usuario no es profesor -->
+    <a href="/web/publicarTutoria/{{info_usuario.0.id_usuario_actual}}" class="btn btn-danger">Crear Tutoria</a> <!-- Esta opcion no deberia aparecer si el usuario no es profesor -->
 {%endif%}
-<button onclick="ver()">Ver</button>
+{% if info_usuario.0.rol == 'E'%}
+     <button class="btn btn-danger">Unirme a una tutoria</button><!-- Esta opcion no deberia aparecer si el usuario es estudiante -->
+{%endif%}
+
 <div class="row">
     {% for t in json_response %}
     <div class="col-12 col-md-6 col-lg-4 d-flex">

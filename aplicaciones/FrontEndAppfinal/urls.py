@@ -8,6 +8,7 @@ from django.contrib.auth.views import logout_then_login,LoginView
 urlpatterns = [
     path('home/', getCatalogoTutorias),
     path('getTutoria/',getTutoria),
+    path('currentuser/',currentuser),
     
 
     

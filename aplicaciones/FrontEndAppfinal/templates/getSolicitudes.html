@@ -68,7 +68,7 @@
                                             <div class="card-middle" style="background-color: white;">
                                                 <h2 class="card-middle-avatar">
                                                     <a href="profile.html"><img class="avatar avatar-sm me-2 avatar-img rounded-circle"
-                                                            src="{% static 'assets/img/profiles/avatar-04.jpg'%}" alt="User Image"> {{t.id_solicitante.0.nombre}}</a>
+                                                            src="/api{{t.id_solicitante.0.foto.url}}"" alt="User Image"> {{t.id_solicitante.0.nombre}}</a>
                                                 </h2>
                                             </div>
                                             <div class="card-body">
@@ -127,11 +127,11 @@
                                             <div class="card-middle" style="background-color: white;">
                                                 <h2 class="card-middle-avatar">
                                                     <a href="profile.html"><img class="avatar avatar-sm me-2 avatar-img rounded-circle"
-                                                            src="{% static 'assets/img/profiles/avatar-04.jpg'%}" alt="User Image"> {{t.id_solicitante.0.nombre}}</a>
+                                                            src="/api{{t.id_solicitante.0.foto.url}}" alt="User Image"> {{t.id_solicitante.0.nombre}}</a>
                                                 </h2>
                                             </div>
                                             <div class="card-body">
-                                                El usuario {{t.id_solicitante.0.nombre}} a pedido unirse ala tutoria "{{t.id_tutoria_publicada.0.nombre}}"
+                                                El usuario {{t.id_solicitante.0.nombre}} ha pedido unirse ala tutoria "{{t.id_tutoria_publicada.0.nombre}}"
                                                 <br>
                                                 <p id="lblestado{{t.idn}}">Estado: {{t.estado}}</p>
                                                 <button class="badge bg-success-dark"  id="btnaceptar{{t.idn}}" onclick="aceptarSolicitud('{{t.idn}}','{{info_usuario.0.id_usuario_actual}}')">Aceptar</button>

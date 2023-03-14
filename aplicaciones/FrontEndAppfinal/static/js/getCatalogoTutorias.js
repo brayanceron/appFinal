@@ -31,9 +31,3 @@ function btnInscribir(id_solicitante,id_tutoria,id_profesor){
 
 }
 
-function ver(){
-    alert("Ok");
-    console.log("Myvariable2="+Myvariable);
-    sumar(2,3)
-    //print("Myvariable="+Myvariable);
-}

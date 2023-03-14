@@ -17,6 +17,8 @@ def getCatalogoTutorias2(request):
         
     return render(request,'getCatalogoTutorias.html',{"json_response":json_response})
 
+def currentuser(request):
+    return HttpResponse("usu: "+str(request.user)+" email: "+str(request.user.email))
 
 def getTutoria(request):
     id_tutoria='63e9bc8d811ef54a3de5952c'
@@ -84,16 +86,38 @@ def signin(request):
     data={
         'form':customUserCreationForm
     }
+    error="No error"
     
     if(request.method=='POST'):
         formulario=customUserCreationForm(data=request.POST)
         if formulario.is_valid():
-            formulario.save()
-            #Ojo aqui hay que registrar el usuario en labase de datos de mongo y en la firebase tambien
-            user=authenticate(username=formulario.cleaned_data["username"],password=formulario.cleaned_data["password1"])
-            login(request,user)
-            return redirect(to="getCatalogoTutorias")
+            print("****FRONT***")
+            print(formulario.cleaned_data["username"])
+            print(formulario.cleaned_data["password1"])
+                        
+            userdata={
+                "correo":formulario.cleaned_data["email"],
+                "rol":request.POST["rol"],
+                "nombre":formulario.cleaned_data["first_name"]+" "+formulario.cleaned_data["last_name"]
+            }
+            
+            print(userdata)
+            
+            peticion=requests.post(SERVER_URL+'/api/registrarUsuario/',json=userdata)
+            
+            if(str(peticion.status_code)=="428"):    print("**FRONT**428"); error = "Ya Existe un usuario con ese correo"            
+            elif (str(peticion.status_code)=="500"): print("**FRONT**500"); error= "Error en el servido, no se pudó completar la solicitud"
+            elif (str(peticion.status_code)=="200"): 
+                print("**FRONT**200");           
+                formulario.save()
+                #Ojo aqui hay que registrar el usuario en labase de datos de mongo
+                user=authenticate(username=formulario.cleaned_data["username"],password=formulario.cleaned_data["password1"])
+                login(request,user)
+                return redirect(to="getCatalogoTutorias")
+        else: 
+            error="Error Al validar los campos del formulario"
         data["form"]=formulario
+        
         #--------------------------------------------------
         #formulario=customUserCreationForm(data=request.POST)
         #if formulario.is_valid():
@@ -105,7 +129,7 @@ def signin(request):
         #    return redirect(to="getCatalogoTutorias")
         #data["form"]=formulario
     
-    return render(request,'signin.html',data)
+    return render(request,'signin.html',{"form":data['form'],"error":error})
 
 
 #--------------------------------------------------------------------------------------
@@ -117,6 +141,8 @@ def getCatalogoTutorias(request):
     #json_response=resp
     a=0
     for t in json_response:
+        print("**FRONT "+str(a))
+        print(t)
         json_response[a]["idn"]=t['_id']['$oid']    #id de la tutoria publicada
         json_response[a]["id_profesorn"]=t['id_profesor'][0]['_id']['$oid']
         a=a+1
@@ -201,9 +227,21 @@ def publicarTutoria(request,id_profesor):
 def getEntrada(request,id_entrada):
     correo=request.user.email
     info_usuario= getInfoUsuario(correo)
-    contenido_entrada = requests.post(SERVER_URL+'/api/getEntrada/',json={'id_entrada':id_entrada}).json()
+    #print("***FRONT***")
+    #print(info_usuario[0]["id_usuario_actual"])
+    
+    peticionPermiso=requests.post(SERVER_URL+'/api/validarPermisoAccesoEntrada/',json={'id_entrada':id_entrada,"current_user_id":info_usuario[0]["id_usuario_actual"]})
+    if(str(peticionPermiso.status_code)=="403"): return HttpResponse("Acceso no autorizado")
+    
+    peticion=requests.post(SERVER_URL+'/api/getEntrada/',json={'id_entrada':id_entrada,"current_user_id":info_usuario[0]["id_usuario_actual"]})
+    #if (str(peticion.status_code)=="403"): return HttpResponse("Acceso no autorizado")
+    if (str(peticion.status_code)=="500"): return HttpResponse("Error en el servido, no se pudó completar la solicitud")
+    
+    
+    
+    contenido_entrada = peticion.json()
     return render(request,'getEntrada.html',{"contenido_entrada":contenido_entrada,"info_usuario":info_usuario})
-
+    #return HttpResponse("prueba")
 
 @login_required
 def registrarEntrada(request,id_tutoria):
