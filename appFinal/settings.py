@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'aplicaciones.BackEndAppfinal',
     'aplicaciones.FrontEndAppfinal',
     'corsheaders',#------------CORS
+    #'users',
 ]
 
 MIDDLEWARE = [
@@ -125,6 +126,9 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+STATIC_ROOT = BASE_DIR / 'aplicaciones' / 'FrontEndAppfinal' / 'static'
+
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
@@ -147,3 +151,8 @@ CORS_ORIGIN_ALLOW_ALL = True#------------------CORS
 #CORS_ALLOWED_ORIGINS = ['*']
 
 SECURE_CROSS_ORIGIN_OPENER_POLICY = None#-----POLITICA NECESARIA
+
+
+
+
+AUTH_USER_MODEL='FrontEndAppfinal.User' #ESTO ES PARA INICIAR SESION CON EL CORREO Y NO CON EL USERNAME

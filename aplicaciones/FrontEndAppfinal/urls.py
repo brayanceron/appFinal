@@ -2,13 +2,13 @@ from django.contrib import admin
 from .views import *
 from django.urls import path,include
 from django.contrib.auth.views import logout_then_login,LoginView
-
+from django.conf.urls import handler404
 
 
 urlpatterns = [
     path('home/', getCatalogoTutorias),
     path('getTutoria/',getTutoria),
-    path('currentuser/',currentuser),
+    #path('currentuser/',currentuser),   #Borrar
     
 
     
@@ -27,5 +27,7 @@ urlpatterns = [
     path('getTutoriaPublicada/<id_tutoria>', getTutoriaPublicada,name='getTutoriaPublicada'),
     
     
-    path('subirArchivos/',subirArchivos),
+    #path('subirArchivos/',subirArchivos),
 ]
+
+handler404=error404.as_view()

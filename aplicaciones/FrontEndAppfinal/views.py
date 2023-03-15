@@ -5,6 +5,7 @@ from aplicaciones.FrontEndAppfinal.forms import customUserCreationForm
 from django.http import HttpResponse
 from django.contrib.auth import login,authenticate
 from django.contrib.auth.decorators import login_required
+from django.views.generic import TemplateView
 
 
 SERVER_URL="http://192.168.1.57:8000"
@@ -83,13 +84,19 @@ def publicarTutoria2(request,id_profesor):
 
 
 def signin(request):
+    if(request.user.is_authenticated ): return redirect(to="getCatalogoTutorias")
+    
     data={
         'form':customUserCreationForm
     }
-    error="No error"
+    error="_"
     
     if(request.method=='POST'):
+        
         formulario=customUserCreationForm(data=request.POST)
+        print("****FRONT***")
+        #print(formulario.cleaned_data["username"])
+        #print(formulario.cleaned_data["password1"])
         if formulario.is_valid():
             print("****FRONT***")
             print(formulario.cleaned_data["username"])
@@ -111,7 +118,7 @@ def signin(request):
                 print("**FRONT**200");           
                 formulario.save()
                 #Ojo aqui hay que registrar el usuario en labase de datos de mongo
-                user=authenticate(username=formulario.cleaned_data["username"],password=formulario.cleaned_data["password1"])
+                user=authenticate(username=formulario.cleaned_data["email"],password=formulario.cleaned_data["password1"])
                 login(request,user)
                 return redirect(to="getCatalogoTutorias")
         else: 
@@ -283,16 +290,16 @@ def getInfoUsuario(correo):
     info_usuario[0]["id_usuario_actual"]=info_usuario[0]["_id"]["$oid"]
     return info_usuario
     
-def subirArchivos(request):
-    return render(request,"subirArchivos.html")
+
    
-   
+@login_required
 def perfil(request,correo):
     #correo=request.user.email
     info_usuario= getInfoUsuario(correo)
     
     return render(request,'perfil.html',{'info_usuario':info_usuario})
 
+@login_required
 def getTutoriaPublicada(request,id_tutoria):
     correo=request.user.email
     info_usuario= getInfoUsuario(correo)
@@ -301,6 +308,10 @@ def getTutoriaPublicada(request,id_tutoria):
 
     return render(request,'getTutoriaPublicada.html',{"json_response":json_response,"id_tutoria":id_tutoria,"info_usuario":info_usuario})
     
+    
+class error404(TemplateView):
+    template_name="error404.html"
+
 ##METODOS DE LA RESPUESTA
 #print(resp)
 #print("***** FRONT *****"+str(resp))

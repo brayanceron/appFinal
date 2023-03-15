@@ -1,6 +1,7 @@
 {% extends 'base_dashboard.html' %}
 {% load static %}	
 
+{% block titulo %}Publicar tutoría{%endblock%}
 {% block fotoPerfilNav%}{{info_usuario.0.foto.url}}{%endblock%}
 {% block MiPerfil%}{{user.email}}{%endblock%}
 {% block nombreNav%}{{user.username}}{%endblock%}
@@ -21,10 +22,10 @@
     <div class="row">
         <div class="col-sm-12">
             <div class="page-sub-header">
-                <h3 class="page-title">Mis Tutoria</h3>
+                <h3 class="page-title">Registrar Tutoría</h3>
                 <ul class="breadcrumb">
                     <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                    <li class="breadcrumb-item active">Mis Tutorias</li>
+                    <li class="breadcrumb-item active">Registrar Tutoría</li>
                 </ul>
             </div>
         </div>
@@ -36,9 +37,8 @@
 
 
 <div class="row">
-    <div class="col-2"></div>
-    <div class="col-8">
-
+    <div class="col-12 col-sm-12 col-md-2 col-lg-2"></div>
+    <div class="col-12 col-sm-12 col-md-8 col-lg-8">
 
         <div class="row">
             <div class="col-lg-12">

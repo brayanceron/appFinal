@@ -24,7 +24,7 @@
                 <h3 class="page-title">Panel Tutoria</h3>
                 <ul class="breadcrumb">
                     <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                    <li class="breadcrumb-item active">Mis Tutorias</li>
+                    <li class="breadcrumb-item active">Panel Tutoria</li>
                 </ul>
             </div>
         </div>
@@ -33,17 +33,95 @@
 
 
 <!-- <a href="/web/registrarEntrada/{{info_tutoria.0.id_tutoria}}/{{info_tutoria.0.id_profesor}}"class="btn btn-danger">Crear Entrada</a> -->
-<a href="/web/registrarEntrada/{{info_tutoria.0.id_tutoria}}" class="btn btn-danger">Crear Entrada</a>
+    <!--
+    <a href="/web/registrarEntrada/{{info_tutoria.0.id_tutoria}}" class="btn btn-danger">Crear Entrada</a>-->
 
     <!--{{info_usuario.0.id_usuario_actual}}-->
-    <p>Tutoria: {{info_tutoria.0.nombre}}</p>
-    <p>Id: {{info_tutoria.0.id_tutoria}}</p>
-    <p>Estudiantes: {{info_tutoria.0.id_estudiantes|length}}</p>
-    <p>Profesor: {{info_tutoria.0.nombre_profesor}}</p>
+
+    
+
+    
+
+
+    <div class="row">
+        <div class="col-0  col-sm-0  col-md-2 col-lg-2 col-xl-2"></div>
+        <div class="col-12 col-lg-12 col-xl-8">
+            <div class="card flex-fill comman-shadow">
+                <div class="card-header">
+                    <div class="row align-items-center">
+                        <div class="col-6">
+                           
+                        </div>
+                        
+                    </div>
+                </div>
+                <div class="">
+                    <div class="row">
+                        <div class="col-lg-3 col-md-3 dash-widget1">
+                            <div class="lesson-activity">
+                                <a href="/web/registrarEntrada/{{info_tutoria.0.id_tutoria}}" class="btn btn-danger">Crear Entrada</a>
+                            </div>
+                        </div>
+                        <div class="col-lg-5 col-md-6">
+                            <div class="dash-details">
+                                
+                                <div class="lesson-activity">
+                                    <div class="lesson-imgs">
+                                        <img src="{% static 'assets/img/icons/lesson-icon-04.svg'%} " alt="">
+                                    </div>
+                                    <div class="views-lesson">
+                                        <h5>Identificador: </h5>
+                                        <h4>{{info_tutoria.0.id_tutoria}}</h4>
+                                    </div>
+                                </div>
+                                <div class="lesson-activity">
+                                    <div class="lesson-imgs">
+                                        <img src="{% static 'assets/img/icons/lesson-icon-05.svg'%} " alt="">
+                                    </div>
+                                    <div class="views-lesson">
+                                        <h5>Tutor: </h5>
+                                        <h4>{{info_tutoria.0.nombre_profesor}}</h4>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-2">
+                            <div class="dash-details">
+                                <div class="lesson-activity">
+                                    <div class="lesson-imgs">
+                                        <img src="{% static 'assets/img/icons/lesson-icon-01.svg'%}" alt="">
+                                    </div>
+                                    <div class="views-lesson">
+                                        <h5>Tutoría</h5>
+                                        <h4>{{info_tutoria.0.nombre}}</h4>
+                                    </div>
+                                </div>
+                                <div class="lesson-activity">
+                                    <div class="lesson-imgs">
+                                        <img src="{% static 'assets/img/icons/lesson-icon-02.svg'%} " alt="">
+                                    </div>
+                                    <div class="views-lesson">
+                                        <h5>Publicaciones: </h5>
+                                        <h4>{{contenido_tutoria|length}}</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                       
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+
+
     {% for t in contenido_tutoria %}
     <div class="row">
-        <div class="col-1 col-md-1"></div>
-        <div class="col-md-10 col-10">
+        <div class="col-0  col-sm-0  col-md-2 col-lg-2 col-xl-2"></div>
+        <div class="col-12 col-sm-12 col-md-9 col-lg-9 col-xl-8">
             <div class="card">
                 <div class="card-header">
                     <h5 class="card-title">{{t.titulo}}</h5>
@@ -66,9 +144,10 @@
                             {%endif%}
                         {%endfor%}
 
-                        <br>
+                        
                         <div class="d-flex flex-wrap gap-2">
-                            <a href="/web/getEntrada/{{t.idn}}"class="badge bg-warning">Entrar</a>
+                             <br>
+                            <a href="/web/getEntrada/{{t.idn}}"class="badge bg-warning badge-gradient-primary">Ver Archivos</a>
                         </div>
 
                     </div>
@@ -78,10 +157,17 @@
         </div>
     </div>
     {%endfor%}
+    <p>Estudiantes: {{info_tutoria.0.id_estudiantes|length}}</p>
 
-    {{info_tutoria}}
+
+
+
+    <!--{{info_tutoria}}
     <hr>
-    {{contenido_tutoria}}
+    {{contenido_tutoria}}-->
+
+
+
 
 
 

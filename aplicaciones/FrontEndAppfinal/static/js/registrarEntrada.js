@@ -6,6 +6,7 @@ function registrarEntrada(current_user_id){
     id_tutoria=document.getElementById("id_tutoria").value
     id_profesor=document.getElementById("id_profesor").value
 
+    if(validarCamposTextVacios([titulo,descripcion,id_profesor,id_tutoria])){ return 0;}
 
     let fd = new FormData();
     

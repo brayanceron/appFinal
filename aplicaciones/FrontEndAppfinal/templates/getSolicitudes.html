@@ -36,6 +36,7 @@
 
 
 
+
 <div class="row">
     <div class="col-1"></div>
 
@@ -49,14 +50,14 @@
                 </div>
                 <div class="card-body">
                     <ul class="nav nav-tabs nav-tabs-solid nav-tabs-rounded nav-justified">
-                        <li class="nav-item"><a class="nav-link active" href="#solid-rounded-justified-tab1"
+                        <li class="nav-item"><a class="nav-link {% if info_usuario.0.rol == 'E' %}active{% endif %}" href="#solid-rounded-justified-tab1"
                                 data-bs-toggle="tab">Mis solicitudes realizadas</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#solid-rounded-justified-tab2"
+                        <li class="nav-item"><a class="nav-link {% if info_usuario.0.rol == 'P' %}active{% endif %}" href="#solid-rounded-justified-tab2"
                                 data-bs-toggle="tab">Solicitudes para mi</a></li>
                         
                     </ul>
                     <div class="tab-content">
-                        <div class="tab-pane show active" id="solid-rounded-justified-tab1" style="background-color: rgb(247, 247, 250);">
+                        <div class="tab-pane show {% if info_usuario.0.rol == 'E' %}active{% endif %}" id="solid-rounded-justified-tab1" style="background-color: rgb(247, 247, 250);">
                             <br>
                             
                             <div class="container">
@@ -73,20 +74,31 @@
                                             </div>
                                             <div class="card-body">
                                                 <p>Tu solicitud de unirte a "{{t.id_tutoria_publicada.0.nombre}}" esta en estado: <p id="lblcancelar{{t.idn}}">{{t.estado}}</p></p>
-                                                <br>
+                                                <!--
                                                 {% if  t.estado == 'RECHAZADA' or   t.estado == 'ACEPTADA' or   t.estado == 'CANCELADA' %}
                                                     <button class="badge bg-warning" id="btnborrar{{t.idn}}" onclick="borrarSolicitud('{{t.idn}}','{{info_usuario.0.id_usuario_actual}}')">Borrar</button>
                                                {% elif  t.estado == 'ESPERA' %}
                                                     <button class="badge bg-danger-dark" id="btncancelar{{t.idn}}" onclick="cancelarSolicitud('{{t.idn}}','{{info_usuario.0.id_usuario_actual}}')">Cancelar</button>
                                                 {%endif%}
-                                                    
+                                            --> 
                                             </div>
+                                            <div class="card-footer">
+                                                <div class="row align-items-center">
+                                                    <div class="col-auto">
+                                                        {% if  t.estado == 'RECHAZADA' or   t.estado == 'ACEPTADA' or   t.estado == 'CANCELADA' %}
+                                                                <button class="badge badge-gradient-dark" id="btnborrar{{t.idn}}" onclick="borrarSolicitud('{{t.idn}}','{{info_usuario.0.id_usuario_actual}}')">Borrar</button>
+                                                        {% elif  t.estado == 'ESPERA' %}
+                                                                <button class="badge badge-gradient-primary" id="btncancelar{{t.idn}}" onclick="cancelarSolicitud('{{t.idn}}','{{info_usuario.0.id_usuario_actual}}')">Cancelar</button>
+                                                        {%endif%}
+                                                    </div>
+                                                </div>
+                                             </div>
                                         </div>
                                     </div>
                                     {%endfor%}
                                 </div>
                             </div>
-                            {{solicitudes_estudiante}}
+                            <!--{{solicitudes_estudiante}}-->
                             <!---
                             {% for t in tutorias_estudiante %}
                                 <div class="row">
@@ -114,7 +126,7 @@
                             {%endfor%}
                             -->
                         </div>
-                        <div class="tab-pane" id="solid-rounded-justified-tab2" style="background-color: rgb(247, 247, 250);">
+                        <div class="tab-pane show {% if info_usuario.0.rol == 'P' %}active{% endif %}" id="solid-rounded-justified-tab2" style="background-color: rgb(247, 247, 250);">
                             <br>
 
                             <div class="container">
@@ -131,12 +143,19 @@
                                                 </h2>
                                             </div>
                                             <div class="card-body">
-                                                El usuario {{t.id_solicitante.0.nombre}} ha pedido unirse ala tutoria "{{t.id_tutoria_publicada.0.nombre}}"
+                                                El estidiante {{t.id_solicitante.0.nombre}} ha pedido unirse ala tutoria "{{t.id_tutoria_publicada.0.nombre}}"
                                                 <br>
                                                 <p id="lblestado{{t.idn}}">Estado: {{t.estado}}</p>
-                                                <button class="badge bg-success-dark"  id="btnaceptar{{t.idn}}" onclick="aceptarSolicitud('{{t.idn}}','{{info_usuario.0.id_usuario_actual}}')">Aceptar</button>
-                                                <button class="badge bg-danger-dark"   id="btnrechazar{{t.idn}}" onclick="rechazarSolicitud('{{t.idn}}','{{info_usuario.0.id_usuario_actual}}')">Rechazar</button>
+                                                
                                             </div>
+                                            <div class="card-footer">
+                                                <div class="row align-items-center">
+                                                    <div class="col-auto">
+                                                        <button class="badge  badge-gradient-primary"  id="btnaceptar{{t.idn}}" onclick="aceptarSolicitud('{{t.idn}}','{{info_usuario.0.id_usuario_actual}}')">Aceptar</button>
+                                                        <button class="badge  badge-gradient-dark"   id="btnrechazar{{t.idn}}" onclick="rechazarSolicitud('{{t.idn}}','{{info_usuario.0.id_usuario_actual}}')">Rechazar</button>
+                                                    </div>
+                                                </div>
+                                             </div>
                                         </div>
                                     </div>
                                     {%endfor%}
@@ -149,7 +168,7 @@
                             </div>
                             
 
-                            {{solicitudes_profesor}}
+                            <!--{{solicitudes_profesor}}-->
                             
                         </div>
                         

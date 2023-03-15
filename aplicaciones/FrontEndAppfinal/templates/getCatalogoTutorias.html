@@ -1,7 +1,7 @@
 {% extends 'base_dashboard.html' %}
 {% load static %}	
 
-
+{% block titulo %}Tutorías{%endblock%}
 {% block fotoPerfilNav%}{{info_usuario.0.foto.url}}{%endblock%}
 {% block MiPerfil%}{{user.email}}{%endblock%}
 {% block nombreNav%}{{user.username}}{%endblock%}
@@ -17,15 +17,15 @@
 {%endblock%}
 
 {% block contenido %}
-{{info_usuario}}
+<!--{{info_usuario}}-->
 <div class="page-header">
     <div class="row">
         <div class="col-sm-12">
             <div class="page-sub-header">
-                <h3 class="page-title">Buscar Tutoria</h3>
+                <h3 class="page-title">Tutorías Disponibles</h3>
                 <ul class="breadcrumb">
                     <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                    <li class="breadcrumb-item active">Tutorias</li>
+                    <li class="breadcrumb-item active">Tutorías Disponibles</li>
                 </ul>
             </div>
         </div>
@@ -35,11 +35,13 @@
 
 {% if info_usuario.0.rol != 'E'%}
     <a href="/web/publicarTutoria/{{info_usuario.0.id_usuario_actual}}" class="btn btn-danger">Crear Tutoria</a> <!-- Esta opcion no deberia aparecer si el usuario no es profesor -->
+    
 {%endif%}
+<!--
 {% if info_usuario.0.rol == 'E'%}
-     <button class="btn btn-danger">Unirme a una tutoria</button><!-- Esta opcion no deberia aparecer si el usuario es estudiante -->
-{%endif%}
-
+     <button class="btn btn-danger">Unirme a una tutoria</button><!-- Esta opcion no deberia aparecer si el usuario es estudiante 
+{%endif%}-->
+<br><br>
 <div class="row">
     {% for t in json_response %}
     <div class="col-12 col-md-6 col-lg-4 d-flex">
@@ -53,10 +55,10 @@
                 <p class="card-text">Tutor: <a href="/web/perfil/{{t.id_profesor.0.correo}}">{{t.id_profesor.0.nombre}}</a></p>
                 
                 {% if info_usuario.0.rol != "P" %}
-                <button class="btn btn-success btn-sm" onclick="btnInscribir(
+                <button class="btn btn-success btn-sm badge-gradient-success" onclick="btnInscribir(
                     '{{info_usuario.0.id_usuario_actual}}',
                     '{{t.idn}}',
-                    '{{t.id_profesorn}}')">Inscribir</button><!-- OJO, VERIFICAR QUE ESTE BOTON SOLO FUNCIONE PARA ESTUDIANTES Y NO PARA PROFESORES-->
+                    '{{t.id_profesorn}}')">Inscribirme!</button><!-- OJO, VERIFICAR QUE ESTE BOTON SOLO FUNCIONE PARA ESTUDIANTES Y NO PARA PROFESORES-->
                 {%endif%}
                 </div>
         </div>
@@ -64,9 +66,9 @@
     {%endfor%}               
 </div>
 
-{{json_response}}
+<!--{{json_response}}-->
 <hr>
-{{info_usuario}}
+<!--{{info_usuario}}-->
 
 
 

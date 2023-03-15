@@ -22,8 +22,14 @@
     <link rel="stylesheet" href="{% static 'assets/plugins/fontawesome/css/all.min.css'%}">
 
     <link rel="stylesheet" href="{% static 'assets/css/style.css'%}">
+    <script  type="text/javascript" src="{% static '/js/utilidades.js' %}"></script>
 </head>
 <body>
+    {% if request.user.is_authenticated %}
+        <script>
+            location.href =SERVER_URL+"/web/getCatalogoTutorias/";
+        </script>
+    {% endif %}
     <div class="main-wrapper login-body">
         <div class="login-wrapper">
             <div class="container">
@@ -39,13 +45,19 @@
 
                             <form method="post">{% csrf_token %}
                                 <div class="form-group">
-                                    <label>Username <span class="login-danger">*</span></label>
+                                    <label>Correo <span class="login-danger">*</span></label>
                                     <input class="form-control" name="username" type="text">
                                     <span class="profile-views"><i class="fas fa-user-circle"></i></span>
                                 </div>
+                                <!--
+                                <div class="form-group">
+                                    <label>Email <span class="login-danger">*</span></label>
+                                    <input class="form-control" name="email" type="text">
+                                    <span class="profile-views"><i class="fas fa-user-circle"></i></span>
+                                </div>-->
                                 <div class="form-group">
                                     <label>Password <span class="login-danger">*</span></label>
-                                    <input class="form-control pass-input" type="text" name="password">
+                                    <input class="form-control pass-input" type="password" name="password">
                                     <span class="profile-views feather-eye toggle-password"></span>
                                 </div>
                                 
@@ -71,5 +83,6 @@
     <script src="{% static '/assets/js/feather.min.js' %}"></script>
 
     <script src="{% static '/assets/js/script.js' %}"></script>
+    
 </body>
 </html>
