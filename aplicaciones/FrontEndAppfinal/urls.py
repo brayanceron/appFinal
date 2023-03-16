@@ -5,6 +5,8 @@ from django.contrib.auth.views import logout_then_login,LoginView
 from django.conf.urls import handler404
 
 
+
+
 urlpatterns = [
     path('home/', getCatalogoTutorias),
     path('getTutoria/',getTutoria),
@@ -27,7 +29,7 @@ urlpatterns = [
     path('getTutoriaPublicada/<id_tutoria>', getTutoriaPublicada,name='getTutoriaPublicada'),
     
     
-    #path('subirArchivos/',subirArchivos),
 ]
 
-handler404=error404.as_view()
+handler404=handler404
+

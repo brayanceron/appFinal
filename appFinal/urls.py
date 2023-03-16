@@ -17,15 +17,14 @@ from django.contrib import admin
 from django.urls import path,include
 from django.contrib.auth.views import logout_then_login,LoginView
 #from django.shortcuts import redirect
-
+from .views import *
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('web/', include('aplicaciones.FrontEndAppfinal.urls')),
     path('api/', include('aplicaciones.BackEndAppfinal.urls')),
-    #path('',redirect(to="getCatalogoTutorias")),
-    #path('login/',LoginView.as_view(template_name='login.html'),name='login'),
+    path('', root),
     path('accounts/login/',LoginView.as_view(template_name='login.html'),name='login'),
 ]
 

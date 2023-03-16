@@ -309,8 +309,9 @@ def getTutoriaPublicada(request,id_tutoria):
     return render(request,'getTutoriaPublicada.html',{"json_response":json_response,"id_tutoria":id_tutoria,"info_usuario":info_usuario})
     
     
-class error404(TemplateView):
-    template_name="error404.html"
+def handler404(request, template_name='404.html'):
+  #from django.shortcuts import render
+  return render(request, '404.html')
 
 ##METODOS DE LA RESPUESTA
 #print(resp)
